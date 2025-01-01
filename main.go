@@ -65,6 +65,7 @@ func updateTimeclosed(ctx *gin.Context) {
 		return
 	}
 
+	// Better to do the timestamp on the server side beacuse the time on the raspberry pi can be incorrect since it does not have an battery powered clock so time will be off until ntp fixes it.
 	parsedDate := time.Now().Format("2006-01-02")
 	result := DB.Model(&LogEntry{}).
 		Where("host_name = ? AND DATE(time_stamp) = ? AND time_stamp_closed = '0001-01-01 00:00:00+00:00'", request.HostName, parsedDate).
@@ -78,26 +79,24 @@ func updateTimeclosed(ctx *gin.Context) {
 
 // Fetch logs for a specific date
 func logDateHandler(ctx *gin.Context) {
+	// Gets data from user input
 	date := ctx.PostForm("date")
 	hostname := ctx.PostForm("hostname")
-	fmt.Println(hostname)
-	fmt.Println(date)
 	var err error
 	var logs []LogEntry
+	// This is to be displayed to the user depending on what data was passed into the form
 	var datemessage string
 	if date == "" && hostname == "" {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Date or HostName is required"})
 		return
 	}
 	if date != "" {
-
 		if hostname != "" {
-			fmt.Println(hostname)
-			fmt.Println(date)
+			// Both hostname and data were entered
 			err = DB.Where("DATE(time_stamp) = ? AND host_name = ?", date, hostname).Find(&logs).Error
 			datemessage = "Showing results for the day: " + date + " and the hostname " + hostname
-
 		} else {
+			// Only date entered
 			err = DB.Where("DATE(time_stamp) = ?", date).Find(&logs).Error
 			datemessage = "Showing results for the day: " + date
 		}
@@ -106,10 +105,10 @@ func logDateHandler(ctx *gin.Context) {
 			return
 		}
 	} else {
+		// Only hostname entered
 		err = DB.Where("host_name = ?", hostname).Find(&logs).Error
 		datemessage = "Showing results for the hostname: " + hostname
 	}
-
 	html := formatLogs(logs)
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
 		"data": template.HTML(html),
