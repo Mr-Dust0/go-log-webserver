@@ -24,7 +24,7 @@ func main() {
 	r.POST("/log", controllers.InsertLog)
 	r.PUT("/fileclosed", controllers.UpdateTimeClosed)
 	r.GET("/login", func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "login2.html", gin.H{})
+		ctx.HTML(http.StatusOK, "login.html", gin.H{})
 	})
 	r.POST("/login", controllers.Login)
 	err := r.RunTLS(":443", initializers.EnvFile["CERT"], initializers.EnvFile["CERT_KEY"])
