@@ -18,7 +18,7 @@ func CheckAuth(c *gin.Context) {
 
 	if authHeader == "" {
 
-		c.HTML(http.StatusOK, "login2.html", gin.H{
+		c.HTML(http.StatusOK, "login.html", gin.H{
 			"error_message": "Need to be authorized to access that page",
 		})
 		c.Abort()
