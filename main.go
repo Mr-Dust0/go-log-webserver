@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -165,6 +166,10 @@ func formatLogs(logs []LogEntry) string {
 
 func main() {
 	initDatabase()
+	envFile, _ := godotenv.Read(".env")
+
+	envFileShell := envFile["SHELL"]
+	fmt.Println(envFileShell) // will be /bin/zsh (what you set in .env file)
 	r := gin.Default()
 	r.StaticFile("/favicon.ico", "./favicon.ico")
 	r.LoadHTMLGlob("templates/*")
@@ -172,7 +177,7 @@ func main() {
 	r.POST("/", logDateHandler)
 	r.POST("/log", insertLog)
 	r.PUT("/fileclosed", updateTimeclosed)
-	err := r.RunTLS(":443", "/home/john/Downloads/go/web/hello_world/cert.pem", "/home/john/Downloads/go/web/hello_world/cert-key.pem")
+	err := r.RunTLS(":443", envFile["CERT"], envFile["CERT_KEY"])
 	if err != nil {
 		log.Fatal(err)
 	}
