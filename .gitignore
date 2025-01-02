@@ -1,4 +1,5 @@
 .env
 favicon.ico
 webserver
+.git/*
 
