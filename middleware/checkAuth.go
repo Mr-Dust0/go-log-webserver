@@ -12,16 +12,16 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func CheckAuth(c *gin.Context) {
+func CheckAuth(ctx *gin.Context) {
 
-	authHeader, err := c.Cookie("Authorization")
+	authHeader, err := ctx.Cookie("Authorization")
 
 	if authHeader == "" {
 
-		c.HTML(http.StatusOK, "login.html", gin.H{
+		ctx.HTML(http.StatusOK, "login.html", gin.H{
 			"error_message": "Need to be authorized to access that page",
 		})
-		c.Abort()
+		ctx.Abort()
 		return
 	}
 	fmt.Println(authHeader)
@@ -33,21 +33,21 @@ func CheckAuth(c *gin.Context) {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 	if err != nil || !token.Valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
-		c.AbortWithStatus(http.StatusUnauthorized)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
+		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-		c.Abort()
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		ctx.Abort()
 		return
 	}
 
 	if float64(time.Now().Unix()) > claims["exp"].(float64) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "token expired"})
-		c.AbortWithStatus(http.StatusUnauthorized)
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "token expired"})
+		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
@@ -55,12 +55,11 @@ func CheckAuth(c *gin.Context) {
 	initializers.DB.Where("ID=?", claims["id"]).Find(&user)
 
 	if user.ID == 0 {
-		c.AbortWithStatus(http.StatusUnauthorized)
+		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
 
-	c.Set("currentUser", user)
-
-	c.Next()
+	ctx.Set("currentUser", user)
+	ctx.Next()
 
 }
