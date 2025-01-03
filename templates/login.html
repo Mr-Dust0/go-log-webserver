@@ -73,7 +73,7 @@
 
           // Check if the response is OK (status 200-299)
           if (response.ok) {
-              window.location.href = '/test'; // Adjust this to your desired route
+              window.location.href = '/'; // Adjust this to your desired route
           } else {
             console.error('Login failed:', response.status, response.statusText);
             document.getElementById('error-message').textContent = "Login failed. Please try again.";
