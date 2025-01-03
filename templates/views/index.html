@@ -1,41 +1,4 @@
-<!DOCTYPE html>
-<html lang=en>
-	<style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: Arial, sans-serif;
-        }
-        th, td {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
-        }
-        tr:hover {
-            background-color: #ddd;
-        }
-        /* Add red background for rows with the 'closed' class */
-        tr.closed {
-            background-color: #ffdddd;  /* Light red */
-        }
-         tr.open {
-            background-color: #d4edda;  /* Light green */
-        }
-.form-container {
-    margin-right: 20px; /* Adds space between the forms */
-}
-
-button {
-    margin-left: 10px; /* Optional, adds space between input fields and the button */
-}
-    </style>
-<body>
+{{ template "header.html" .}}
     <div class="container" style="display: flex; flex-direction: column; align-items: flex-start; gap: 20px;">
         <form action="/" method="POST" onsubmit="return validateForm()">
             <div class="form-container" style="display: flex; align-items: center;">
@@ -67,7 +30,6 @@ button {
             return true; // Allow form submission
         }
     </script>
-</body>
 <p1>{{ .date }}</p1>
 <table>
     <thead>
@@ -83,4 +45,4 @@ button {
     {{ .data }}
     </tbody>
 </table>
-</html>
+{{ template "footer.html" . }}
