@@ -5,7 +5,6 @@ import (
 	"os"
 	"time"
 	"webserver/initializers"
-	"webserver/middleware"
 	"webserver/models"
 
 	"github.com/gin-gonic/gin"
@@ -86,9 +85,14 @@ func ChangePassword(ctx *gin.Context) {
 
 }
 func GetResetPage(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "resetpassword.html", gin.H{"userName": middleware.LoggedInUser})
+	//userName, _ := ctx.Get("userName")
+	//fmt.Println("Reset " + userName.(string))
+	ctx.HTML(http.StatusOK, "resetpassword.html", gin.H{
+		"userName": "a"})
 
 }
 func GetLoginPage(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "login.html", gin.H{})
+	userName, _ := ctx.Get("userName")
+	ctx.HTML(http.StatusOK, "login.html", gin.H{
+		"userName": userName.(string)})
 }

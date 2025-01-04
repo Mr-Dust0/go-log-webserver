@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"fmt"
-	"net/http"
 	"os"
 	"time"
 	"webserver/initializers"
@@ -14,16 +13,13 @@ import (
 
 func DecryptJwt(ctx *gin.Context) jwt.MapClaims {
 	// Get data stored in Authorization cookie
+	emptyClaims := jwt.MapClaims{}
 	tokenString, err := ctx.Cookie("Authorization")
 
 	// Check if there is data in the cookie
 	if tokenString == "" {
 		// Error message will be displayed at the top of the login page in red
-		ctx.HTML(http.StatusOK, "login.html", gin.H{
-			"error_message": "Need to be authorized to access that page",
-		})
-		// Stop processesing futher handlers so the desired page ins't loaded
-		ctx.Abort()
+		return emptyClaims
 	}
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Check sigining method is legit
@@ -34,20 +30,17 @@ func DecryptJwt(ctx *gin.Context) jwt.MapClaims {
 		return []byte(os.Getenv("SECRET")), nil
 	})
 	if err != nil || !token.Valid {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return emptyClaims
 	}
 
 	// Get claims stored in the token
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-		ctx.Abort()
+		return emptyClaims
 	}
 	// See if current time is gretater than expired time which means the token is expired and no longer valid
 	if float64(time.Now().Unix()) > claims["exp"].(float64) {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "token expired"})
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return emptyClaims
 	}
 	return claims
 
@@ -60,9 +53,23 @@ func CheckAuth(ctx *gin.Context) {
 
 	// Check to see if ID in token maps to an valid user
 	if user.ID == 0 {
-		ctx.AbortWithStatus(http.StatusUnauthorized)
+		ctx.Redirect(302, "/login")
 	}
 
+	ctx.Next()
+
+}
+func GetUsedLoggedIn(ctx *gin.Context) {
+	claims := DecryptJwt(ctx)
+	var user models.User
+	initializers.DB.Where("ID=?", claims["id"]).Find(&user)
+
+	if user.ID == 0 {
+		ctx.Set("userName", "")
+		ctx.Next()
+	}
+
+	ctx.Set("userName", "Welcome "+user.Username)
 	ctx.Next()
 
 }

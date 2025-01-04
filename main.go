@@ -27,14 +27,14 @@ func main() {
 	// Tell the router when to find the html files from
 	r.LoadHTMLGlob("templates/**/*.html")
 	// Run CheckAuth before GetHomePageHandler to make sure that the user is authenicated before being able to see the logs
-	r.GET("/", middleware.CheckAuth, controllers.GetHomePageHandler)
-	r.POST("/", middleware.CheckAuth, controllers.PostHomePageHandler)
+	r.GET("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.GetHomePageHandler)
+	r.POST("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.PostHomePageHandler)
 	r.POST("/log", controllers.InsertLog)
 	r.PUT("/fileclosed", controllers.UpdateTimeClosed)
-	r.GET("/login", controllers.GetLoginPage)
-	r.POST("/login", controllers.Login)
-	r.GET("/reset", controllers.GetResetPage)
-	r.POST("/reset", controllers.ChangePassword)
+	r.GET("/login", middleware.GetUsedLoggedIn, controllers.GetLoginPage)
+	r.POST("/login", middleware.GetUsedLoggedIn, controllers.Login)
+	r.GET("/reset", middleware.GetUsedLoggedIn, controllers.GetResetPage)
+	r.POST("/reset", middleware.GetUsedLoggedIn, controllers.ChangePassword)
 	// If running in production use this to use TLS/https instead of using http and allow any on the network to reach the application
 	//err := r.RunTLS(":443", initializers.EnvFile["CERT"], initializers.EnvFile["CERT_KEY"])
 	//	if err != nil {
