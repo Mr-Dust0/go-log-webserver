@@ -57,17 +57,21 @@ func ChangePassword(ctx *gin.Context) {
 	userName := ctx.PostForm("username")
 	oldPassword := ctx.PostForm("oldpassword")
 	newPassword := ctx.PostForm("newpassword")
-	fmt.Println(userName + oldPassword + newPassword)
+	if newPassword == oldPassword {
+		ctx.HTML(http.StatusConflict, "resetpassword.html", gin.H{"error_message": "Old password cannot equal new password"})
+		return
+	}
 	var user models.User
 	initializers.DB.Where("userName = ?", userName).Find(&user)
 	if user.ID == 0 {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user not found with that email please try again"})
+		// Dont want to say the username is wrong because that can give attackers an idea of what usernames to brute force
+		ctx.HTML(http.StatusConflict, "resetpassword.html", gin.H{"error_message": "Invalid user details"})
 		return
 	}
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword)); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
+		ctx.HTML(http.StatusConflict, "resetpassword.html", gin.H{"error_message": "Invalid user details"})
 		return
 	}
 	initializers.DB.Where("ID = ?", user.ID).Update("Password", newPassword)
-	ctx.JSON(http.StatusOK, gin.H{"email": user.Email})
+	ctx.HTML(http.StatusOK, "index.html", gin.H{"email": user.Email})
 }
