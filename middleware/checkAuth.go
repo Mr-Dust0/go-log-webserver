@@ -12,10 +12,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-var LoggedInUser string
-
-func CheckAuth(ctx *gin.Context) {
-	LoggedInUser = ""
+func DecryptJwt(ctx *gin.Context) jwt.MapClaims {
 	// Get data stored in Authorization cookie
 	tokenString, err := ctx.Cookie("Authorization")
 
@@ -27,7 +24,6 @@ func CheckAuth(ctx *gin.Context) {
 		})
 		// Stop processesing futher handlers so the desired page ins't loaded
 		ctx.Abort()
-		return
 	}
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Check sigining method is legit
@@ -40,7 +36,6 @@ func CheckAuth(ctx *gin.Context) {
 	if err != nil || !token.Valid {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid or expired token"})
 		ctx.AbortWithStatus(http.StatusUnauthorized)
-		return
 	}
 
 	// Get claims stored in the token
@@ -48,26 +43,26 @@ func CheckAuth(ctx *gin.Context) {
 	if !ok {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		ctx.Abort()
-		return
 	}
 	// See if current time is gretater than expired time which means the token is expired and no longer valid
 	if float64(time.Now().Unix()) > claims["exp"].(float64) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "token expired"})
 		ctx.AbortWithStatus(http.StatusUnauthorized)
-		return
 	}
+	return claims
 
+}
+
+func CheckAuth(ctx *gin.Context) {
+	claims := DecryptJwt(ctx)
 	var user models.User
 	initializers.DB.Where("ID=?", claims["id"]).Find(&user)
 
 	// Check to see if ID in token maps to an valid user
 	if user.ID == 0 {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
-		return
 	}
 
-	LoggedInUser = "Welcome: " + user.Username
-	// Alow Next handler to run
 	ctx.Next()
 
 }
