@@ -91,7 +91,7 @@ func PostHomePageHandler(ctx *gin.Context) {
 			return
 		}
 	} else {
-		// Only hostname entered
+		// Match enteries for hostname entered
 		err = initializers.DB.Where("host_name = ?", hostname).Find(&logs).Error
 		datemessage = "Showing results for the hostname: " + hostname
 	}
@@ -103,8 +103,8 @@ func PostHomePageHandler(ctx *gin.Context) {
 }
 func formatDuration(d time.Duration) string {
 	// Convert the duration to minutes and seconds
-	minutes := int(d.Minutes())      // Get the integer part of minutes
-	seconds := int(d.Seconds()) % 60 // Get the integer part of seconds
+	minutes := int(d.Minutes())
+	seconds := int(d.Seconds()) % 60
 
 	// Format the result as "Xm Ys"
 	return fmt.Sprintf("%dm %ds", minutes, seconds)
