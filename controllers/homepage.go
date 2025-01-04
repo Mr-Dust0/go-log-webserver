@@ -58,8 +58,9 @@ func GetHomePageHandler(ctx *gin.Context) {
 	// Get the html for the logs to be displayed in html
 	html := formatLogs(logs)
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
-		"data": template.HTML(html),
-		"date": "Showing all logs for all days",
+		"userName": GetUserLoggedIn(ctx),
+		"data":     template.HTML(html),
+		"date":     "Showing all logs for all days",
 	})
 }
 func PostHomePageHandler(ctx *gin.Context) {
@@ -97,8 +98,9 @@ func PostHomePageHandler(ctx *gin.Context) {
 	}
 	html := formatLogs(logs)
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
-		"data": template.HTML(html),
-		"date": datemessage,
+		"userName": GetUserLoggedIn(ctx),
+		"data":     template.HTML(html),
+		"date":     datemessage,
 	})
 }
 func formatDuration(d time.Duration) string {

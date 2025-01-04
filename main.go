@@ -4,7 +4,7 @@ import (
 	_ "encoding/json"
 	"webserver/controllers"
 	"webserver/initializers"
-	middlewares "webserver/middleware"
+	"webserver/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,8 +27,8 @@ func main() {
 	// Tell the router when to find the html files from
 	r.LoadHTMLGlob("templates/**/*.html")
 	// Run CheckAuth before GetHomePageHandler to make sure that the user is authenicated before being able to see the logs
-	r.GET("/", middlewares.CheckAuth, controllers.GetHomePageHandler)
-	r.POST("/", middlewares.CheckAuth, controllers.PostHomePageHandler)
+	r.GET("/", middleware.CheckAuth, controllers.GetHomePageHandler)
+	r.POST("/", middleware.CheckAuth, controllers.PostHomePageHandler)
 	r.POST("/log", controllers.InsertLog)
 	r.PUT("/fileclosed", controllers.UpdateTimeClosed)
 	r.GET("/login", controllers.GetLoginPage)

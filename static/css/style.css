@@ -103,3 +103,32 @@ button {
   width: 80%;
 }
 
+    .header-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        height: 10%; /* Ajust to fill the viewport height */
+    }
+
+
+    .username {
+        margin-bottom: 20px; /* Space between username and navbar */
+    }
+
+
+    .header-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        height: 10%; /* Ajust to fill the viewport height */
+    }
+
+
+    .username {
+        margin-bottom: 20px; /* Space between username and navbar */
+    }
+

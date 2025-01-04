@@ -80,7 +80,9 @@ func ChangePassword(ctx *gin.Context) {
 	newPasswordHash, _ := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 	// Update password to new password that is hashed
 	initializers.DB.Where("ID = ?", user.ID).Update("Password", newPasswordHash)
-	ctx.HTML(http.StatusOK, "index.html", gin.H{"email": user.Email})
+	ctx.Redirect(http.StatusFound, "/") // Equivalent to HTTP 302 redirect, which forces a GET request.
+	return
+
 }
 func GetResetPage(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "resetpassword.html", gin.H{})
@@ -88,4 +90,13 @@ func GetResetPage(ctx *gin.Context) {
 }
 func GetLoginPage(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "login.html", gin.H{})
+}
+func GetUserLoggedIn(ctx *gin.Context) string {
+	userName, exists := ctx.Get("userName")
+	if exists {
+		return "Welcome " + userName.(string)
+	} else {
+		return ""
+	}
+
 }

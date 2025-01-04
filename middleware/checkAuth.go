@@ -1,4 +1,4 @@
-package middlewares
+package middleware
 
 import (
 	"fmt"
@@ -63,6 +63,7 @@ func CheckAuth(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
+	ctx.Set("userName", user.Username)
 
 	// Alow Next handler to run
 	ctx.Next()
