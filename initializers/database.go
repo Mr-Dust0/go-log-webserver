@@ -18,26 +18,31 @@ var DB *gorm.DB
 // Initialize the database connection
 func InitDatabase() {
 	var err error
+	// Get the path of executable that is being executed
 	ex, err := os.Executable()
 	if err != nil {
 		panic(err)
 	}
+	// Get the directory where the executable is
 	exPath := filepath.Dir(ex)
-	fmt.Println(exPath)
+	// Open database stored in current directory
 	DB, err = gorm.Open(sqlite.Open(exPath+"/tracker.db"), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to database: ", err)
 	}
+	// Create table for LogEntry is there is none
 	err = DB.AutoMigrate(&models.LogEntry{})
 	if err != nil {
 		log.Fatal("Failed to migrate database schema: ", err)
 	}
+	// Create table for User if there is none
 	err = DB.AutoMigrate(&models.User{})
 	if err != nil {
 		log.Fatal("Failed to migrate database schema: ", err)
 	}
 }
 func InsertTestData() {
+	// Hash Sample user password to store in database
 	passwordHash, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
 	sampleUser := models.User{
 		Email:    "test@test.com",
@@ -48,6 +53,7 @@ func InsertTestData() {
 		return
 
 	}
+	// Create sample log entries to show how logs are displayed in the application
 	logEntries := []models.LogEntry{
 		{
 			TimeStamp:       time.Date(2025, 1, 2, 15, 5, 47, 42288622, time.UTC),
