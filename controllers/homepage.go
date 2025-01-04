@@ -17,8 +17,6 @@ func formatLogs(logs []models.LogEntry) string {
 		rowClass := "class='open'"
 		timestampClosed := "File has not closed"
 		timeOpenMessage := "File has not closed yet"
-		fmt.Println(logEntry.TimeStampClosed)
-		fmt.Println(logEntry.TimeStampClosed.IsZero())
 		if logEntry.TimeStampClosed.IsZero() == false {
 			timeOpen := logEntry.TimeStampClosed.Sub(logEntry.TimeStamp)
 			fmt.Println(timeOpen)

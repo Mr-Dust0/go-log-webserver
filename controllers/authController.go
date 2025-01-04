@@ -48,9 +48,6 @@ func Login(ctx *gin.Context) {
 
 	fmt.Println(userFound.Email)
 	ctx.SetCookie("Authorization", token, 24*3600, "", "", false, true)
-	ctx.JSON(200, gin.H{
-		"token": token,
-	})
 }
 func ChangePassword(ctx *gin.Context) {
 
