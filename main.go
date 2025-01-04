@@ -10,10 +10,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func initialize() {
+	initializers.LoadEnvs()
+	initializers.InitDatabase()
+	initializers.InsertTestData()
+}
+
 func main() {
 
-	initializers.InitDatabase()
-	initializers.LoadEnvs()
+	initialize()
 	r := gin.Default()
 	r.StaticFile("/favicon.ico", "./favicon.ico")
 	r.Static("/static", "./static")
