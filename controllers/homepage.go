@@ -10,15 +10,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type FormatedLog struct {
-	RowClass                 string
-	TimeStampFormatted       string
-	HostName                 string
-	FileName                 string
-	TimeStampClosedFormatted string
-	TimeFileWasOpened        string
-}
-
 func GetHomePageHandler(ctx *gin.Context) {
 	var logs []models.LogEntry
 	// Find all the logs in the database
@@ -87,9 +78,9 @@ func formatDuration(d time.Duration) string {
 	return fmt.Sprintf("%dm %ds", minutes, seconds)
 }
 
-func formatLogs(logs []models.LogEntry) []FormatedLog {
+func formatLogs(logs []models.LogEntry) []models.FormatedLog {
 	// Create list of FormattedLogs with the capacity the same size of the logs which should reduce the amount of heap allocations that need to happen and speed up performance an tiny bit
-	formatLogs := make([]FormatedLog, 0, len(logs))
+	formatLogs := make([]models.FormatedLog, 0, len(logs))
 	for _, logEntry := range logs {
 		// Add an class to make the row red or green depending if the file is still open
 		rowClass := "open"
@@ -112,7 +103,7 @@ func formatLogs(logs []models.LogEntry) []FormatedLog {
 		}
 
 		// Create an FormattedLog which will be looped through in the index.html templated.
-		log := FormatedLog{RowClass: rowClass,
+		log := models.FormatedLog{RowClass: rowClass,
 			TimeStampFormatted:       string(logEntry.TimeStamp.Format("2006-01-02 15:04:05")),
 			HostName:                 logEntry.HostName,
 			FileName:                 logEntry.FileName,
