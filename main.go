@@ -28,6 +28,7 @@ func main() {
 	r.LoadHTMLGlob("templates/**/*.html")
 	// Run CheckAuth before GetHomePageHandler to make sure that the user is authenicated before being able to see the logs
 	r.GET("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.GetHomePageHandler)
+	r.GET("/2", middleware.GetUsedLoggedIn, controllers.GetHomePageHandler2)
 	r.POST("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.PostHomePageHandler)
 	r.POST("/log", controllers.InsertLog)
 	r.PUT("/fileclosed", controllers.UpdateTimeClosed)
