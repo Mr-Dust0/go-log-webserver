@@ -7,6 +7,7 @@ import (
 	"time"
 	"webserver/initializers"
 	"webserver/models"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
@@ -53,16 +54,20 @@ func Login(ctx *gin.Context) {
 }
 func ChangePassword(ctx *gin.Context) {
 
-	email := ctx.PostForm("email")
-	if email == "" {
-		ctx.JSON(http.StatusUnprocessableEntity, gin.H{})
-		return
-	}
+	userName := ctx.PostForm("username")
+	oldPassword := ctx.PostForm("oldpassword")
+	newPassword := ctx.PostForm("newpassword")
+	fmt.Println(userName + oldPassword + newPassword)
 	var user models.User
-	initializers.DB.Where("Email = ?", email).Find(&user)
+	initializers.DB.Where("userName = ?", userName).Find(&user)
 	if user.ID == 0 {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user not found with that email please try again"})
 		return
 	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(oldPassword)); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
+		return
+	}
+	initializers.DB.Where("ID = ?", user.ID).Update("Password", newPassword)
 	ctx.JSON(http.StatusOK, gin.H{"email": user.Email})
 }
