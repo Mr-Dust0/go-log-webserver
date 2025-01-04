@@ -12,6 +12,7 @@ import (
 func initialize() {
 	initializers.LoadEnvs()
 	initializers.InitDatabase()
+	// Create sample data this should only be used when testing the application
 	initializers.InsertTestData()
 }
 
