@@ -18,12 +18,15 @@ func initialize() {
 
 func main() {
 
+	// Initlaize database and load .env file
 	initialize()
+	// Create router
 	r := gin.Default()
 	r.StaticFile("/favicon.ico", "./favicon.ico")
 	r.Static("/static", "./static")
+	// Tell the router when to find the html files from
 	r.LoadHTMLGlob("templates/**/*.html")
-	//r.LoadHTMLGlob("templates/partials/*.html")
+	// Run CheckAuth before GetHomePageHandler to make sure that the user is authenicated before being able to see the logs
 	r.GET("/", middlewares.CheckAuth, controllers.GetHomePageHandler)
 	r.POST("/", middlewares.CheckAuth, controllers.PostHomePageHandler)
 	r.POST("/log", controllers.InsertLog)
@@ -32,10 +35,11 @@ func main() {
 	r.POST("/login", controllers.Login)
 	r.GET("/reset", controllers.GetResetPage)
 	r.POST("/reset", controllers.ChangePassword)
-	// If running in production use this to use TLS/https instead of using http
+	// If running in production use this to use TLS/https instead of using http and allow any on the network to reach the application
 	//err := r.RunTLS(":443", initializers.EnvFile["CERT"], initializers.EnvFile["CERT_KEY"])
 	//	if err != nil {
 	//		log.Fatal(err)
 	//	}
+	// Run on localhost to make sure no one else on the network can hit the application
 	r.Run("127.0.0.1:8080")
 }
