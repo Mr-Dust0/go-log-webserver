@@ -1,7 +1,7 @@
 package initializers
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/joho/godotenv"
 )
@@ -12,7 +12,9 @@ func LoadEnvs() {
 	var err error
 	EnvFile, err = godotenv.Read()
 	if err != nil {
-		log.Fatal("Error loading .env file")
+		//log.Fatal("Error loading .env file")
+		fmt.Println("Could not find env file")
+
 	}
 
 }
