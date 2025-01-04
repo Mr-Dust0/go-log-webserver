@@ -12,8 +12,10 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-func CheckAuth(ctx *gin.Context) {
+var LoggedInUser string
 
+func CheckAuth(ctx *gin.Context) {
+	LoggedInUser = ""
 	// Get data stored in Authorization cookie
 	tokenString, err := ctx.Cookie("Authorization")
 
@@ -63,8 +65,8 @@ func CheckAuth(ctx *gin.Context) {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
 		return
 	}
-	ctx.Set("userName", user.Username)
 
+	LoggedInUser = "Welcome: " + user.Username
 	// Alow Next handler to run
 	ctx.Next()
 

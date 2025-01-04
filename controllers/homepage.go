@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 	"webserver/initializers"
+	"webserver/middleware"
 	"webserver/models"
 
 	"github.com/gin-gonic/gin"
@@ -58,7 +59,7 @@ func GetHomePageHandler(ctx *gin.Context) {
 	// Get the html for the logs to be displayed in html
 	html := formatLogs(logs)
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
-		"userName": GetUserLoggedIn(ctx),
+		"userName": middleware.LoggedInUser,
 		"data":     template.HTML(html),
 		"date":     "Showing all logs for all days",
 	})
@@ -98,7 +99,7 @@ func PostHomePageHandler(ctx *gin.Context) {
 	}
 	html := formatLogs(logs)
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
-		"userName": GetUserLoggedIn(ctx),
+		"userName": middleware.LoggedInUser,
 		"data":     template.HTML(html),
 		"date":     datemessage,
 	})

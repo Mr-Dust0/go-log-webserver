@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"time"
 	"webserver/initializers"
+	"webserver/middleware"
 	"webserver/models"
 
 	"github.com/gin-gonic/gin"
@@ -85,13 +87,15 @@ func ChangePassword(ctx *gin.Context) {
 
 }
 func GetResetPage(ctx *gin.Context) {
-	ctx.HTML(http.StatusOK, "resetpassword.html", gin.H{})
+	fmt.Println("LALAL" + middleware.LoggedInUser)
+	ctx.HTML(http.StatusOK, "resetpassword.html", gin.H{"userName": middleware.LoggedInUser})
 
 }
 func GetLoginPage(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "login.html", gin.H{})
 }
 func GetUserLoggedIn(ctx *gin.Context) string {
+	// Get Username set in the context in
 	userName, exists := ctx.Get("userName")
 	if exists {
 		return "Welcome " + userName.(string)
