@@ -42,7 +42,15 @@
         </tr>
     </thead>
     <tbody>
-    {{ .data }}
+    {{ range .Logs }}
+        <tr class="{{ .RowClass }}">
+            <td>{{ .TimeStampFormatted }}</td>
+        <td>{{ .HostName }}</td>
+        <td>{{ .FileName }}</td>
+            <td>{{ .TimeStampClosedFormatted }}</td>
+                <td>{{ .TimeFileWasOpened }}</td>
+        </tr>
+        {{ end }}
     </tbody>
 </table>
 {{ template "footer.html" . }}
