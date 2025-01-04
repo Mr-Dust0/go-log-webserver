@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "encoding/json"
-	"log"
 	"net/http"
 	"webserver/controllers"
 	"webserver/initializers"
@@ -32,8 +31,9 @@ func main() {
 		ctx.HTML(http.StatusOK, "resetpassword.html", gin.H{})
 	})
 	r.POST("/reset", controllers.ChangePassword)
-	err := r.RunTLS(":443", initializers.EnvFile["CERT"], initializers.EnvFile["CERT_KEY"])
-	if err != nil {
-		log.Fatal(err)
-	}
+	//err := r.RunTLS(":443", initializers.EnvFile["CERT"], initializers.EnvFile["CERT_KEY"])
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	}
+	r.Run("127.0.0.1:8080")
 }
