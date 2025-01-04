@@ -14,22 +14,27 @@ import (
 func formatLogs(logs []models.LogEntry) string {
 	html := ""
 	for _, logEntry := range logs {
+		// Add an class to make the row red or green depending if the file is still open
 		rowClass := "class='open'"
 		timestampClosed := "File has not closed"
 		timeOpenMessage := "File has not closed yet"
+		// Check if the file is closed
 		if logEntry.TimeStampClosed.IsZero() == false {
+			// Get time differnce between opening time and closing time
 			timeOpen := logEntry.TimeStampClosed.Sub(logEntry.TimeStamp)
-			fmt.Println(timeOpen)
+			// Check to see if the file was open for more than 2 miniutes because it was probaly an mistake if the file was open for less than 2 miniutes
 			if timeOpen < time.Minute*2 {
-				fmt.Println("The file was not open long enough for this to be logged")
 				continue
 			}
 
+			// Update timeOpenMessage to the duration the file was open and format it to be in the format 3m 45s
 			timeOpenMessage = formatDuration(logEntry.TimeStampClosed.Sub(logEntry.TimeStamp))
+			// Change class to closed to make row red
 			rowClass = "class='closed'"
 			timestampClosed = logEntry.TimeStampClosed.Format("2006-01-02 15:04:05")
 		}
 
+		// Html for the table row that will be used as an variable in index.html
 		html += fmt.Sprintf(`
         <tr %s>
             <td>%s</td>
@@ -43,12 +48,14 @@ func formatLogs(logs []models.LogEntry) string {
 }
 func GetHomePageHandler(ctx *gin.Context) {
 	var logs []models.LogEntry
+	// Find all the logs in the database
 	err := initializers.DB.Find(&logs).Error
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch logs"})
 		return
 	}
 
+	// Get the html for the logs to be displayed in html
 	html := formatLogs(logs)
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
 		"data": template.HTML(html),
@@ -68,12 +75,14 @@ func PostHomePageHandler(ctx *gin.Context) {
 		return
 	}
 	if date != "" {
+		// Both hostname and data were entered
 		if hostname != "" {
-			// Both hostname and data were entered
+			// Get logs that match the search cateria of both hostname and date
 			err = initializers.DB.Where("DATE(time_stamp) = ? AND host_name = ?", date, hostname).Find(&logs).Error
+			// Update datemessage to show what search results lead to the output
 			datemessage = "Showing results for the day: " + date + " and the hostname " + hostname
 		} else {
-			// Only date entered
+			// Match enteries that match the date entered
 			err = initializers.DB.Where("DATE(time_stamp) = ?", date).Find(&logs).Error
 			datemessage = "Showing results for the day: " + date
 		}
