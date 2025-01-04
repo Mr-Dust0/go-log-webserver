@@ -72,3 +72,10 @@ func ChangePassword(ctx *gin.Context) {
 	initializers.DB.Where("ID = ?", user.ID).Update("Password", newPassword)
 	ctx.HTML(http.StatusOK, "index.html", gin.H{"email": user.Email})
 }
+func GetResetPage(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "resetpassword.html", gin.H{})
+
+}
+func GetLoginPage(ctx *gin.Context) {
+	ctx.HTML(http.StatusOK, "login.html", gin.H{})
+}

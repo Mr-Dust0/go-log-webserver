@@ -2,7 +2,6 @@ package main
 
 import (
 	_ "encoding/json"
-	"net/http"
 	"webserver/controllers"
 	"webserver/initializers"
 	middlewares "webserver/middleware"
@@ -28,14 +27,11 @@ func main() {
 	r.POST("/", middlewares.CheckAuth, controllers.PostHomePageHandler)
 	r.POST("/log", controllers.InsertLog)
 	r.PUT("/fileclosed", controllers.UpdateTimeClosed)
-	r.GET("/login", func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "login.html", gin.H{})
-	})
+	r.GET("/login", controllers.GetLoginPage)
 	r.POST("/login", controllers.Login)
-	r.GET("/reset", func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "resetpassword.html", gin.H{})
-	})
+	r.GET("/reset", controllers.GetResetPage)
 	r.POST("/reset", controllers.ChangePassword)
+	// If running in production use this to use TLS/https instead of using http
 	//err := r.RunTLS(":443", initializers.EnvFile["CERT"], initializers.EnvFile["CERT_KEY"])
 	//	if err != nil {
 	//		log.Fatal(err)
