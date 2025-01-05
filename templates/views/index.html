@@ -1,23 +1,32 @@
+{{ template "header.html" .}}
+<div class="flex-1 overflow-auto" hx-get="/logs" hx-trigger="load" hx-target="#test">
+    <div class="container mx-auto">
+        <!-- Wrapper for the two input fields to make them inline -->
+        <div class="flex items-center space-x-4 mt-4">
+            <!-- Hostname Input -->
+            <label for="hostname" class="flex-1">
+                Select a hostname:
+                <input class="rounded mx-auto w-full sm:w-64 p-4" type="text" name="hostname" list="sug"
+                    hx-get="/hostname-suggestions"
+                    hx-trigger="keyup changed delay:600ms"
+                    hx-target="#search-suggestions" />
+            </label>
+
+            <!-- Date Input -->
+            <label for="date" class="flex-1">
+                Date:
+                <input class="rounded mx-auto w-full sm:w-64 p-4" type="date" name="date"/>
+            </label>
+        <button hx-post="/logtable" hx-include="[name='hostname'],[name='date']" hx-target="#test">
+            Search!
+        </button>
+        </div>
+
+        <!-- Suggestions Section -->
+        <div id="search-suggestions">
+        </div>
+    </div>
+</div>
 <p1>{{ .date }}</p1>
-<table>
-    <thead>
-        <tr>
-            <th>Time Opened</th>
-            <th>Hostname</th>
-            <th>File Opened</th>
-            <th>File Closed</th> 
-            <th>Time file has been opened</th> 
-        </tr>
-    </thead>
-    <tbody>
-    {{ range .Logs }}
-        <tr class="{{ .RowClass }}">
-            <td>{{ .TimeStampFormatted }}</td>
-        <td>{{ .HostName }}</td>
-        <td>{{ .FileName }}</td>
-            <td>{{ .TimeStampClosedFormatted }}</td>
-                <td>{{ .TimeFileWasOpened }}</td>
-        </tr>
-        {{ end }}
-    </tbody>
-</table>
+<div id="test"></div>
+{{ template "footer.html" . }}

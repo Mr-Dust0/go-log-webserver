@@ -30,7 +30,8 @@ func main() {
 	// Tell the router when to find the html files from
 	r.LoadHTMLGlob("templates/**/*.html")
 	// Run CheckAuth before GetHomePageHandler to make sure that the user is authenicated before being able to see the logs
-	r.GET("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.GetHomePageHandler)
+	r.GET("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.GetIndex)
+	r.GET("/logs", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.GetHomePageHandler)
 	r.GET("/2", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "index2.html", gin.H{})
 	})
@@ -47,6 +48,7 @@ func main() {
 		ctx.HTML(http.StatusOK, "suggestions.html", gin.H{"hostnames": hostnames})
 	})
 	r.POST("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.PostHomePageHandler)
+	r.POST("/logtable", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.PostSearch)
 	r.POST("/log", controllers.InsertLog)
 	r.PUT("/fileclosed", controllers.UpdateTimeClosed)
 	r.GET("/login", middleware.GetUsedLoggedIn, controllers.GetLoginPage)
