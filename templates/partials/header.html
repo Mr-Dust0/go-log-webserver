@@ -11,9 +11,9 @@
 
 </head>
 <header>
-    <div class="header-content">
+<div class="header-content" hx-get="/username" hx-trigger="load" hx-target="#username">
         <h1 class="site-title">Welcome to the Log Viewer</h1>
-        <p class="username">{{ .userName }}</p>
+                <div id="username" ></div>
         </div>
         <nav class="navbar">
             <a href="/">Home</a>

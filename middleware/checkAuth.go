@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 	"webserver/initializers"
@@ -71,5 +72,21 @@ func GetUsedLoggedIn(ctx *gin.Context) {
 
 	ctx.Set("userName", "Welcome "+user.Username)
 	ctx.Next()
+
+}
+
+func GetUser(ctx *gin.Context) {
+	claims := DecryptJwt(ctx)
+	var user models.User
+	var message string
+	initializers.DB.Where("ID=?", claims["id"]).Find(&user)
+
+	if user.ID == 0 {
+		message = ""
+
+	} else {
+		message = "Welcome: " + user.Username
+	}
+	ctx.HTML(http.StatusOK, "username.html", gin.H{"userName": message})
 
 }
