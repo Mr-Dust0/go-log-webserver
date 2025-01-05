@@ -1,28 +1,30 @@
 {{ template "header.html" .}}
 <div class="flex-1 overflow-auto" hx-get="/logs" hx-trigger="load" hx-target="#test">
     <div class="container mx-auto">
-        <!-- Wrapper for the two input fields to make them inline -->
-        <div class="flex items-center space-x-4 mt-4">
-            <!-- Hostname Input -->
-            <label for="hostname" class="flex-1">
-                Select a hostname:
-                <input class="rounded mx-auto w-full sm:w-64 p-4" type="text" name="hostname" list="sug"
-                    hx-get="/hostname-suggestions"
-                    hx-trigger="keyup, changed, load, delay:600ms"
-                    hx-target="#search-suggestions" />
-            </label>
-            <label for="date" class="flex-1">
-                Date:
-                <input class="rounded mx-auto w-full sm:w-64 p-4" type="date" name="date"/>
-            </label>
-        <button hx-post="/logs" hx-include="[name='hostname'],[name='date']" hx-target="#test">
-            Search!
-        </button>
-        <div id="search-suggestions">
+        <!-- Wrapper for the input fields and button -->
+        <div class="flex flex-col items-center space-y-4 mt-4">
+            <!-- Hostname Input and Date Input on the same line -->
+            <div class="flex space-x-4 w-full max-w-lg">
+                <label for="hostname" class="flex-1">
+                    Select a hostname:
+                    <input class="rounded w-full p-2" type="text" name="hostname" list="sug"
+                        hx-get="/hostname-suggestions"
+                        hx-trigger="keyup, changed, load, delay:600ms"
+                        hx-target="#search-suggestions" />
+                </label>
+                <label for="date" class="flex-1">
+                    Date:
+                    <input class="rounded w-full p-2" type="date" name="date"/>
+                </label>
+            </div>
+            
+            <!-- Search Button Underneath the Inputs -->
+            <button class="p-2 px-4 text-sm mt-2" hx-post="/logs" hx-include="[name='hostname'],[name='date']" hx-target="#test">
+                Search!
+            </button>
         </div>
-        </div>
+        <div id="search-suggestions"></div>
     </div>
 </div>
-<p1>{{ .date }}</p1>
 <div id="test"></div>
 {{ template "footer.html" . }}
