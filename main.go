@@ -2,6 +2,7 @@ package main
 
 import (
 	_ "encoding/json"
+	"net/http"
 	"webserver/controllers"
 	"webserver/initializers"
 	"webserver/middleware"
@@ -28,7 +29,9 @@ func main() {
 	r.LoadHTMLGlob("templates/**/*.html")
 	// Run CheckAuth before GetHomePageHandler to make sure that the user is authenicated before being able to see the logs
 	r.GET("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.GetHomePageHandler)
-	r.GET("/2", middleware.GetUsedLoggedIn, controllers.GetHomePageHandler2)
+	r.GET("/2", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "index2.html", gin.H{})
+	})
 	r.POST("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.PostHomePageHandler)
 	r.POST("/log", controllers.InsertLog)
 	r.PUT("/fileclosed", controllers.UpdateTimeClosed)
