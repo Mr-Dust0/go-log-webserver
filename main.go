@@ -38,11 +38,11 @@ func main() {
 		var logs []models.LogEntry
 		hostnames := make([]string, 0)
 		hostname := ctx.Query("hostname")
-		fmt.Println(hostname)
 		hostname = "%" + hostname + "%" //
 		initializers.DB.Where("host_name LIKE?", hostname).Find(&logs)
 		for _, log := range logs {
 			hostnames = append(hostnames, log.HostName)
+			fmt.Println(log.HostName)
 		}
 		ctx.HTML(http.StatusOK, "suggestions.html", gin.H{"hostnames": hostnames})
 	})

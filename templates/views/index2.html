@@ -1,43 +1,4 @@
 {{ template "header.html" .}}
-    <style>
-
-        #search-results {
-            flex-grow: 1;
-            overflow-y: auto; /* Make content scrollable if it overflows */
-            padding: 20px;
-        }
-
-        /* Style the table */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        table th, table td {
-            padding: 12px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-
-        table th {
-            background-color: #f4f4f4;
-        }
-
-        table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        table tbody tr:hover {
-            background-color: #f1f1f1;
-        }
-
-        p1 {
-            font-size: 18px;
-            margin-bottom: 20px;
-            display: block;
-        }
-    </style>
-
 <div class="flex-1 overflow-auto">
     <div class="container mx-auto">
         <button hx-post="/" hx-include="[name='hostname'],[name='date']">
@@ -46,10 +7,17 @@
         <input class="rounded mx-auto w-lg p-4" type="text" name="hostname"
                                 hx-get="/hostname-suggestions"
 				 hx-trigger="keyup changed delay:600ms"
-				 hx-target="#search-results" />
-        />
+				 hx-target="#search-suggestions" />
         <input class="rounded mx-auto w-lg p-4" type="date" name="date"/>
     </div>
+    <label>Select an hostname: 
+        <input class="rounded mx-auto w-lg p-4" type="text" name="hostname" list="sug"
+                                hx-get="/hostname-suggestions"
+				 hx-trigger="keyup changed delay:600ms"
+				 hx-target="#search-suggestions" />
+    </label>
+<div id="search-suggestions">
+</div>
 
     <!-- Search Results Section -->
     <div id="search-results" class="flex-1 overflow-auto">

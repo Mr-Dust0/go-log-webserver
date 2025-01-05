@@ -1,1 +1,6 @@
-{{ .hostnames }}
+<datalist id="sug" >
+{{ range .hostnames }}
+    <option> {{ . }} </option>
+<p> {{ . }}</p>
+{{ end }}
+</datalist>
