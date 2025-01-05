@@ -10,15 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetIndex(ctx *gin.Context) {
-	var logs []models.LogEntry
-	// Find all the logs in the database
-	err := initializers.DB.Find(&logs).Error
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch logs"})
-		return
-	}
-	// Get the html for the logs to be displayed in html
+func GetInex(ctx *gin.Context) {
+	// Display the index page which is used by htmx to load the logs
 	userName, _ := ctx.Get("userName")
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
 		"date":     "Showing all logs for all days",
@@ -37,6 +30,7 @@ func GetHomePageHandler(ctx *gin.Context) {
 
 	// Get the html for the logs to be displayed in html
 	formattedLogs := formatLogs(logs)
+	// Load only the table which is used by htmx to be displayed on the index page
 	ctx.HTML(http.StatusOK, "logtable.html", gin.H{
 		"Logs": formattedLogs,
 		"date": "Showing all logs for all days",
@@ -92,20 +86,24 @@ func HomeSuggestions(ctx *gin.Context) {
 	var logs []models.LogEntry
 	hostnames := make([]string, 0)
 	hostname := ctx.Query("hostname")
+	// Allow hostname to match any part of the hostname stored in the database
 	hostname = "%" + hostname + "%" //
+	// Find the logs that have the currently typed in query anywhere in the hostname
 	initializers.DB.Where("host_name LIKE?", hostname).Find(&logs)
 	for _, log := range logs {
+		// Append the hostname to an array of hostnames that match the entered term
 		hostnames = append(hostnames, log.HostName)
 	}
+	// Get rid of duplicates so only show in once as an dataentry and not many times
 	hostnames = removeDuplicates(hostnames)
-	fmt.Println(hostnames)
-	fmt.Println("Hello")
+	// Load the suggestions template which creates the datalist which is used by htmx
 	ctx.HTML(http.StatusOK, "suggestions.html", gin.H{"hostnames": hostnames})
 }
 func removeDuplicates(s []string) []string {
 	bucket := make(map[string]bool)
 	var result []string
 	for _, str := range s {
+		// Check if the key already exists in the map if and it isnt add the value to an list that is returned at the end of the function and do nothing if the key is already present
 		if _, ok := bucket[str]; !ok {
 			bucket[str] = true
 			result = append(result, str)
@@ -147,8 +145,8 @@ func PostSearch(ctx *gin.Context) {
 		err = initializers.DB.Where("host_name = ?", hostname).Find(&logs).Error
 		datemessage = "Showing results for the hostname: " + hostname
 	}
-	fmt.Println(datemessage)
 	formattedLogs := formatLogs(logs)
+	// Load only the table which is used by htmx to be shown on the index page
 	ctx.HTML(http.StatusOK, "logtable.html", gin.H{
 		"Logs": formattedLogs,
 		"date": datemessage,
