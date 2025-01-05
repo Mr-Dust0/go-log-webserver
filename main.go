@@ -33,7 +33,6 @@ func main() {
 	r.GET("/logs", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.GetHomePageHandler)
 	// Get suggestions for what hostname to search for
 	r.GET("/hostname-suggestions", controllers.HomeSuggestions)
-	r.POST("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.PostHomePageHandler)
 	// Populate the log table but only with data that meets search parameters
 	r.POST("/logs", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.PostSearch)
 	// Used by qr-code reader to add logs to the database
