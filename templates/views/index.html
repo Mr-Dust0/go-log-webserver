@@ -11,13 +11,11 @@
                     hx-trigger="keyup, changed, load, delay:600ms"
                     hx-target="#search-suggestions" />
             </label>
-
-            <!-- Date Input -->
             <label for="date" class="flex-1">
                 Date:
                 <input class="rounded mx-auto w-full sm:w-64 p-4" type="date" name="date"/>
             </label>
-        <button hx-post="/logtable" hx-include="[name='hostname'],[name='date']" hx-target="#test">
+        <button hx-post="/logs" hx-include="[name='hostname'],[name='date']" hx-target="#test">
             Search!
         </button>
         <div id="search-suggestions">
