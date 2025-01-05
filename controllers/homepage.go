@@ -43,47 +43,6 @@ func GetHomePageHandler(ctx *gin.Context) {
 	})
 }
 
-//	func PostHomePageHandler(ctx *gin.Context) {
-//		// Gets data from user input
-//		date := ctx.PostForm("date")
-//		hostname := ctx.PostForm("hostname")
-//		var err error
-//		var logs []models.LogEntry
-//		// This is to be displayed to the user depending on what data was passed into the form
-//		var datemessage string
-//		if date == "" && hostname == "" {
-//			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Date or HostName is required"})
-//			return
-//		}
-//		if date != "" {
-//			// Both hostname and data were entered
-//			if hostname != "" {
-//				// Get logs that match the search cateria of both hostname and date
-//				err = initializers.DB.Where("DATE(time_stamp) = ? AND host_name = ?", date, hostname).Find(&logs).Error
-//				// Update datemessage to show what search results lead to the output
-//				datemessage = "Showing results for the day: " + date + " and the hostname " + hostname
-//			} else {
-//				// Match enteries that match the date entered
-//				err = initializers.DB.Where("DATE(time_stamp) = ?", date).Find(&logs).Error
-//				datemessage = "Showing results for the day: " + date
-//			}
-//			if err != nil {
-//				ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch logs"})
-//				return
-//			}
-//		} else {
-//			// Match enteries for hostname entered
-//			err = initializers.DB.Where("host_name = ?", hostname).Find(&logs).Error
-//			datemessage = "Showing results for the hostname: " + hostname
-//		}
-//		formattedLogs := formatLogs(logs)
-//		userName, _ := ctx.Get("userName")
-//		ctx.HTML(http.StatusOK, "index.html", gin.H{
-//			"Logs":     formattedLogs,
-//			"date":     datemessage,
-//			"userName": "Welcome " + userName.(string),
-//		})
-//	}
 func formatDuration(d time.Duration) string {
 	// Convert the duration to minutes and seconds
 	minutes := int(d.Minutes())
