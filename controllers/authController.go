@@ -87,8 +87,9 @@ func ChangePassword(ctx *gin.Context) {
 func GetResetPage(ctx *gin.Context) {
 	//userName, _ := ctx.Get("userName")
 	//fmt.Println("Reset " + userName.(string))
+	userName, _ := ctx.Get("userName")
 	ctx.HTML(http.StatusOK, "resetpassword.html", gin.H{
-		"userName": "a"})
+		"userName": userName.(string)})
 
 }
 func GetLoginPage(ctx *gin.Context) {
