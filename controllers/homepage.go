@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetInex(ctx *gin.Context) {
+func GetIndex(ctx *gin.Context) {
 	// Display the index page which is used by htmx to load the logs
 	userName, _ := ctx.Get("userName")
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
