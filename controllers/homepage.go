@@ -10,6 +10,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func GetIndex(ctx *gin.Context) {
+	var logs []models.LogEntry
+	// Find all the logs in the database
+	err := initializers.DB.Find(&logs).Error
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch logs"})
+		return
+	}
+	// Get the html for the logs to be displayed in html
+	userName, _ := ctx.Get("userName")
+	ctx.HTML(http.StatusOK, "index.html", gin.H{
+		"date":     "Showing all logs for all days",
+		"userName": userName.(string),
+	})
+}
+
 func GetHomePageHandler(ctx *gin.Context) {
 	var logs []models.LogEntry
 	// Find all the logs in the database
@@ -21,54 +37,12 @@ func GetHomePageHandler(ctx *gin.Context) {
 
 	// Get the html for the logs to be displayed in html
 	formattedLogs := formatLogs(logs)
-	userName, _ := ctx.Get("userName")
-	ctx.HTML(http.StatusOK, "index.html", gin.H{
-		"Logs":     formattedLogs,
-		"date":     "Showing all logs for all days",
-		"userName": "Welcome " + userName.(string),
+	ctx.HTML(http.StatusOK, "logtable.html", gin.H{
+		"Logs": formattedLogs,
+		"date": "Showing all logs for all days",
 	})
 }
-func PostHomePageHandler(ctx *gin.Context) {
-	// Gets data from user input
-	date := ctx.PostForm("date")
-	hostname := ctx.PostForm("hostname")
-	var err error
-	var logs []models.LogEntry
-	// This is to be displayed to the user depending on what data was passed into the form
-	var datemessage string
-	if date == "" && hostname == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Date or HostName is required"})
-		return
-	}
-	if date != "" {
-		// Both hostname and data were entered
-		if hostname != "" {
-			// Get logs that match the search cateria of both hostname and date
-			err = initializers.DB.Where("DATE(time_stamp) = ? AND host_name = ?", date, hostname).Find(&logs).Error
-			// Update datemessage to show what search results lead to the output
-			datemessage = "Showing results for the day: " + date + " and the hostname " + hostname
-		} else {
-			// Match enteries that match the date entered
-			err = initializers.DB.Where("DATE(time_stamp) = ?", date).Find(&logs).Error
-			datemessage = "Showing results for the day: " + date
-		}
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch logs"})
-			return
-		}
-	} else {
-		// Match enteries for hostname entered
-		err = initializers.DB.Where("host_name = ?", hostname).Find(&logs).Error
-		datemessage = "Showing results for the hostname: " + hostname
-	}
-	formattedLogs := formatLogs(logs)
-	userName, _ := ctx.Get("userName")
-	ctx.HTML(http.StatusOK, "index.html", gin.H{
-		"Logs":     formattedLogs,
-		"date":     datemessage,
-		"userName": "Welcome " + userName.(string),
-	})
-}
+
 func formatDuration(d time.Duration) string {
 	// Convert the duration to minutes and seconds
 	minutes := int(d.Minutes())
@@ -113,4 +87,70 @@ func formatLogs(logs []models.LogEntry) []models.FormatedLog {
 		formatLogs = append(formatLogs, log)
 	}
 	return formatLogs
+}
+func HomeSuggestions(ctx *gin.Context) {
+	var logs []models.LogEntry
+	hostnames := make([]string, 0)
+	hostname := ctx.Query("hostname")
+	hostname = "%" + hostname + "%" //
+	initializers.DB.Where("host_name LIKE?", hostname).Find(&logs)
+	for _, log := range logs {
+		hostnames = append(hostnames, log.HostName)
+	}
+	hostnames = removeDuplicates(hostnames)
+	fmt.Println(hostnames)
+	fmt.Println("Hello")
+	ctx.HTML(http.StatusOK, "suggestions.html", gin.H{"hostnames": hostnames})
+}
+func removeDuplicates(s []string) []string {
+	bucket := make(map[string]bool)
+	var result []string
+	for _, str := range s {
+		if _, ok := bucket[str]; !ok {
+			bucket[str] = true
+			result = append(result, str)
+		}
+	}
+	return result
+}
+
+func PostSearch(ctx *gin.Context) {
+	// Gets data from user input
+	date := ctx.PostForm("date")
+	hostname := ctx.PostForm("hostname")
+	var err error
+	var logs []models.LogEntry
+	// This is to be displayed to the user depending on what data was passed into the form
+	var datemessage string
+	if date == "" && hostname == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Date or HostName is required"})
+		return
+	}
+	if date != "" {
+		// Both hostname and data were entered
+		if hostname != "" {
+			// Get logs that match the search cateria of both hostname and date
+			err = initializers.DB.Where("DATE(time_stamp) = ? AND host_name = ?", date, hostname).Find(&logs).Error
+			// Update datemessage to show what search results lead to the output
+			datemessage = "Showing results for the day: " + date + " and the hostname " + hostname
+		} else {
+			// Match enteries that match the date entered
+			err = initializers.DB.Where("DATE(time_stamp) = ?", date).Find(&logs).Error
+			datemessage = "Showing results for the day: " + date
+		}
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch logs"})
+			return
+		}
+	} else {
+		// Match enteries for hostname entered
+		err = initializers.DB.Where("host_name = ?", hostname).Find(&logs).Error
+		datemessage = "Showing results for the hostname: " + hostname
+	}
+	fmt.Println(datemessage)
+	formattedLogs := formatLogs(logs)
+	ctx.HTML(http.StatusOK, "logtable.html", gin.H{
+		"Logs": formattedLogs,
+		"date": datemessage,
+	})
 }

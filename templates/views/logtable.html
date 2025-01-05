@@ -1,0 +1,24 @@
+<p>{{ .date }}</p>
+<div id="test"></div>
+<table>
+    <thead>
+        <tr>
+            <th>Time Opened</th>
+            <th>Hostname</th>
+            <th>File Opened</th>
+            <th>File Closed</th> 
+            <th>Time file has been opened</th> 
+        </tr>
+    </thead>
+    <tbody>
+    {{ range .Logs }}
+        <tr class="{{ .RowClass }}">
+            <td>{{ .TimeStampFormatted }}</td>
+        <td>{{ .HostName }}</td>
+        <td>{{ .FileName }}</td>
+            <td>{{ .TimeStampClosedFormatted }}</td>
+                <td>{{ .TimeFileWasOpened }}</td>
+        </tr>
+        {{ end }}
+    </tbody>
+</table>
