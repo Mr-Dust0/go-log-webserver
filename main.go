@@ -2,12 +2,10 @@ package main
 
 import (
 	_ "encoding/json"
-	"fmt"
 	"net/http"
 	"webserver/controllers"
 	"webserver/initializers"
 	"webserver/middleware"
-	"webserver/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,18 +33,20 @@ func main() {
 	r.GET("/2", func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "index2.html", gin.H{})
 	})
-	r.GET("/hostname-suggestions", func(ctx *gin.Context) {
-		var logs []models.LogEntry
-		hostnames := make([]string, 0)
-		hostname := ctx.Query("hostname")
-		hostname = "%" + hostname + "%" //
-		initializers.DB.Where("host_name LIKE?", hostname).Find(&logs)
-		for _, log := range logs {
-			hostnames = append(hostnames, log.HostName)
-			fmt.Println(log.HostName)
-		}
-		ctx.HTML(http.StatusOK, "suggestions.html", gin.H{"hostnames": hostnames})
-	})
+
+	r.GET("/hostname-suggestions", controllers.HomeSuggestions)
+	// r.GET("/hostname-suggestions", func(ctx *gin.Context) {
+	// 	var logs []models.LogEntry
+	// 	hostnames := make([]string, 0)
+	// 	hostname := ctx.Query("hostname")
+	// 	hostname = "%" + hostname + "%" //
+	// 	initializers.DB.Where("host_name LIKE?", hostname).Find(&logs)
+	// 	for _, log := range logs {
+	// 		hostnames = append(hostnames, log.HostName)
+	// 		fmt.Println(log.HostName)
+	// 	}
+	// 	ctx.HTML(http.StatusOK, "suggestions.html", gin.H{"hostnames": hostnames})
+	// })
 	r.POST("/", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.PostHomePageHandler)
 	r.POST("/logtable", middleware.CheckAuth, middleware.GetUsedLoggedIn, controllers.PostSearch)
 	r.POST("/log", controllers.InsertLog)

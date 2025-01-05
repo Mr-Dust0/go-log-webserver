@@ -138,9 +138,22 @@ func HomeSuggestions(ctx *gin.Context) {
 	initializers.DB.Where("host_name LIKE?", hostname).Find(&logs)
 	for _, log := range logs {
 		hostnames = append(hostnames, log.HostName)
-		fmt.Println(log.HostName)
 	}
+	hostnames = removeDuplicates(hostnames)
+	fmt.Println(hostnames)
+	fmt.Println("Hello")
 	ctx.HTML(http.StatusOK, "suggestions.html", gin.H{"hostnames": hostnames})
+}
+func removeDuplicates(s []string) []string {
+	bucket := make(map[string]bool)
+	var result []string
+	for _, str := range s {
+		if _, ok := bucket[str]; !ok {
+			bucket[str] = true
+			result = append(result, str)
+		}
+	}
+	return result
 }
 
 func PostSearch(ctx *gin.Context) {

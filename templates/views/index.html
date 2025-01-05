@@ -8,7 +8,7 @@
                 Select a hostname:
                 <input class="rounded mx-auto w-full sm:w-64 p-4" type="text" name="hostname" list="sug"
                     hx-get="/hostname-suggestions"
-                    hx-trigger="keyup changed delay:600ms"
+                    hx-trigger="keyup, changed, load, delay:600ms"
                     hx-target="#search-suggestions" />
             </label>
 
@@ -20,10 +20,8 @@
         <button hx-post="/logtable" hx-include="[name='hostname'],[name='date']" hx-target="#test">
             Search!
         </button>
-        </div>
-
-        <!-- Suggestions Section -->
         <div id="search-suggestions">
+        </div>
         </div>
     </div>
 </div>
