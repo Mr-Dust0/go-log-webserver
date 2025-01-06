@@ -14,16 +14,11 @@ import (
 
 func Login(ctx *gin.Context) {
 
-	var authInput models.AuthInput
-
-	// Take Json from POST request from login.html and put the data into authInput
-	if err := ctx.ShouldBindJSON(&authInput); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	userName := ctx.PostForm("username")
+	password := ctx.PostForm("password")
 
 	var userFound models.User
-	initializers.DB.Where("username=?", authInput.Username).Find(&userFound)
+	initializers.DB.Where("username=?", userName).Find(&userFound)
 
 	// Check if the Username matches with an user
 	if userFound.ID == 0 {
@@ -32,7 +27,7 @@ func Login(ctx *gin.Context) {
 	}
 
 	// Hash the Password given in the POST request and compare it to the hash in the database to see if they are the same
-	if err := bcrypt.CompareHashAndPassword([]byte(userFound.Password), []byte(authInput.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(userFound.Password), []byte(password)); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid password"})
 		return
 	}
@@ -52,6 +47,9 @@ func Login(ctx *gin.Context) {
 
 	// Set Authorization cookie that can last for an day and allow to be sent over http because securecookie is set to false.
 	ctx.SetCookie("Authorization", token, 24*3600, "", "", false, true)
+	// Statusfound doesnt allow posts i think
+	ctx.Redirect(http.StatusFound, "/")
+
 }
 func ChangePassword(ctx *gin.Context) {
 
