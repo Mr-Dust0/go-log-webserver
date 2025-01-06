@@ -44,6 +44,7 @@ func main() {
 	r.GET("/reset", middleware.GetUsedLoggedIn, controllers.GetResetPage)
 	r.GET("/username", middleware.GetUser)
 	r.POST("/reset", controllers.ChangePassword)
+	r.GET("/openfile", controllers.GetOpenLogs)
 	// If running in production use this to use TLS/https instead of using http and allow any on the network to reach the application
 	//err := r.RunTLS(":443", initializers.EnvFile["CERT"], initializers.EnvFile["CERT_KEY"])
 	//	if err != nil {

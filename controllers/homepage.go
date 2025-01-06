@@ -36,6 +36,31 @@ func GetHomePageHandler(ctx *gin.Context) {
 		"date": "Showing all logs for all days",
 	})
 }
+func GetOpenLogs(ctx *gin.Context) {
+	var logs []models.LogEntry
+	checkbox := ctx.Query("showopenonly")
+	println(checkbox)
+	if checkbox == "" {
+
+		// Find all the logs in the database
+		err := initializers.DB.Where("time_stamp_closed = ?", "0001-01-01 00:00:00+00:00").Find(&logs).Error
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch logs"})
+			return
+		}
+	} else {
+		GetHomePageHandler(ctx)
+		return
+	}
+
+	// Get the html for the logs to be displayed in html
+	formattedLogs := formatLogs(logs)
+	// Load only the table which is used by htmx to be displayed on the index page
+	ctx.HTML(http.StatusOK, "logtable.html", gin.H{
+		"Logs": formattedLogs,
+		"date": "Showing all logs for all days",
+	})
+}
 
 func formatDuration(d time.Duration) string {
 	// Convert the duration to minutes and seconds
