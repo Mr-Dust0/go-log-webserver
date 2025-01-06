@@ -40,7 +40,7 @@ func GetOpenLogs(ctx *gin.Context) {
 	var logs []models.LogEntry
 	checkbox := ctx.Query("showopenonly")
 	println(checkbox)
-	if checkbox == "" {
+	if checkbox == "on" {
 
 		// Find all the logs in the database
 		err := initializers.DB.Where("time_stamp_closed = ?", "0001-01-01 00:00:00+00:00").Find(&logs).Error

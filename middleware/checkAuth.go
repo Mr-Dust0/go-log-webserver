@@ -85,7 +85,7 @@ func GetUser(ctx *gin.Context) {
 		message = ""
 
 	} else {
-		message = "Welcome: " + user.Username
+		message = "Welcome user: " + user.Username
 	}
 	ctx.HTML(http.StatusOK, "username.html", gin.H{"userName": message})
 
