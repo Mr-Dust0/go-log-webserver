@@ -18,12 +18,12 @@
                 </label>
                 <label for="showopenonly">
                     Show Open Only:
-                    <input name="showopenonly" type="checkbox" class="rounded w-full p-2" hx-get="/openfile" hx-trigger="change" />
+                    <input name="openonly" type="checkbox" class="rounded w-full p-2"/>
                 </label>
             </div>
             
             <!-- Search Button Underneath the Inputs -->
-            <button class="p-2 px-4 text-sm mt-2" hx-post="/logs" hx-include="[name='hostname'],[name='date']" hx-target="#test">
+            <button class="p-2 px-4 text-sm mt-2" hx-get="/logs" hx-include="[name='hostname'],[name='date'],[name='openonly']" hx-target="#test">
                 Search!
             </button>
         </div>
