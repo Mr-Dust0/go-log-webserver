@@ -1,6 +1,4 @@
-// models/authInput.go
-
-package models
+package types
 
 // Create AuthInput structure to store the json data from login.html into
 type AuthInput struct {
