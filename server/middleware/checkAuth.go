@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"webserver/initializers"
-	"webserver/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
@@ -47,10 +45,19 @@ func DecryptJwt(ctx *gin.Context) jwt.MapClaims {
 
 }
 
-func CheckAuth(ctx *gin.Context) {
+func (mw *Middleware) CheckAuth(ctx *gin.Context) {
 	claims := DecryptJwt(ctx)
-	var user models.User
-	initializers.DB.Where("ID=?", claims["id"]).Find(&user)
+	userID, ok := claims["id"].(float64)
+	if !ok {
+		// ctx.Redirect(302, "/login")
+		ctx.Next()
+	}
+
+	user, err := mw.Database.GetUserByID(userID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
 	// Check to see if ID in token maps to an valid user
 	if user.ID == 0 {
@@ -60,10 +67,20 @@ func CheckAuth(ctx *gin.Context) {
 	ctx.Next()
 
 }
-func GetUsedLoggedIn(ctx *gin.Context) {
+
+func (mw *Middleware) GetUsedLoggedIn(ctx *gin.Context) {
 	claims := DecryptJwt(ctx)
-	var user models.User
-	initializers.DB.Where("ID=?", claims["id"]).Find(&user)
+	userID, ok := claims["id"].(float64)
+	if !ok {
+		// ctx.Redirect(302, "/login")
+		ctx.Next()
+	}
+
+	user, err := mw.Database.GetUserByID(userID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
 	if user.ID == 0 {
 		ctx.Set("userName", "")
@@ -72,21 +89,25 @@ func GetUsedLoggedIn(ctx *gin.Context) {
 
 	ctx.Set("userName", "Welcome "+user.Username)
 	ctx.Next()
-
 }
 
-func GetUser(ctx *gin.Context) {
-	claims := DecryptJwt(ctx)
-	var user models.User
+func (mw *Middleware) GetUser(ctx *gin.Context) {
 	var message string
-	initializers.DB.Where("ID=?", claims["id"]).Find(&user)
+	claims := DecryptJwt(ctx)
+	userID, ok := claims["id"].(float64)
+	if !ok {
+		// ctx.Redirect(302, "/login")
+		ctx.Next()
+	}
 
-	if user.ID == 0 {
-		message = ""
+	user, err := mw.Database.GetUserByID(userID)
+	if err != nil {
+		message = "Invalid user details"
+	}
 
-	} else {
+	if user != nil {
 		message = "Welcome user: " + user.Username
 	}
-	ctx.HTML(http.StatusOK, "username.html", gin.H{"userName": message})
 
+	ctx.HTML(http.StatusOK, "username.html", gin.H{"userName": message})
 }

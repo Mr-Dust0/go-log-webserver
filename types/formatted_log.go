@@ -1,6 +1,6 @@
-package models
+package types
 
-type FormatedLog struct {
+type FormattedLog struct {
 	RowClass                 string
 	TimeStampFormatted       string
 	HostName                 string
